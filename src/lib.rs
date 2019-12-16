@@ -62,13 +62,13 @@ fn ghetto_rand_int(max_int: usize) -> usize {
     nanos % max_int
 }
 
-fn pick_task(tasks: &Vec<String>) -> Result<&String, &'static str> {
+fn pick_task(tasks: &Vec<String>) -> String {
+    if tasks.is_empty() {
+        return String::from("Chillax");
+    }
     let i = ghetto_rand_int(tasks.len());
     //let i = rand::random::<usize>() % tasks.len();
-    match tasks.get(i) {
-        Some(val) => Ok(val),
-        None => Err("Task list is empty."),
-    }
+    tasks.get(i).unwrap().to_string()
 }
 
 fn rewrap(msg: &str, max_width: usize) -> String
@@ -149,7 +149,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let filename = config.tasks_path + "/sloth_tasks.txt";
     let contents = fs::read_to_string(filename)?;
     let tasks = parse_tasks(&contents);
-    let task = pick_task(&tasks)?;
+    let task = pick_task(&tasks);
     slothsay(&task);
 
     Ok(())
