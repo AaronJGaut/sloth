@@ -1,6 +1,8 @@
 use std::env;
 use std::fs;
 use std::error::Error;
+use std::time;
+use std::convert::TryInto;
 
 const SLOTH_ART: &'static str = include_str!("sloth.txt");
 
@@ -54,8 +56,16 @@ fn parse_tasks(contents: &String) -> Vec<String> {
     tasks
 }
 
+fn ghetto_rand_int(max_int: usize) -> usize {
+    let dur = time::SystemTime::now().duration_since(time::UNIX_EPOCH).unwrap();
+    let nanos: usize = dur.as_nanos().try_into().unwrap();
+    nanos % max_int
+}
+
 fn pick_task(tasks: &Vec<String>) -> Result<&String, &'static str> {
-    match tasks.get(0) {
+    let i = ghetto_rand_int(tasks.len());
+    //let i = rand::random::<usize>() % tasks.len();
+    match tasks.get(i) {
         Some(val) => Ok(val),
         None => Err("Task list is empty."),
     }
