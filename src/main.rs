@@ -1,11 +1,3 @@
-// 1. Determine filename from default or env
-// 2. Open file
-// 3. Build list of tasks
-// 4. Pick task at random
-// 5. Wrap text of task based on max width
-// 6. Determine text rectangle dimensions
-// 7. Render text
-
 use std::env;
 use std::process;
 
