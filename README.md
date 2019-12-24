@@ -37,9 +37,9 @@ For example, `PREFIX=FOO make install` will install the binary to `FOO/bin`.
 
 # Usage
 
-To use sloth, first pick a directory for your `sloth_tasks.txt` file.
-The default directory is `$HOME/.sloth`, but this can be overriden by setting the `SLOTH_TASKS_DIR` variable.
-Populate your `sloth_tasks.txt` file with tasks you need to do.
+To use sloth, first create your sloth `tasks.txt` file.
+The default location is `$HOME/.sloth/tasks.txt`, but this can be overriden by setting the `SLOTH_TASKS` variable.
+Populate your `tasks.txt` file with tasks you need to do.
 Tasks should be separated by an empty line.
 When you run the `sloth` binary, it will pick one of these tasks at random and tell you to go do it.
 

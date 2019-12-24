@@ -15,11 +15,11 @@ impl Config {
     }
 
     fn get_tasks_path() -> Result<String, &'static str> {
-        match env::var("SLOTH_TASKS_DIR") {
+        match env::var("SLOTH_TASKS") {
             Ok(val) => Ok(val),
             Err(_) => match env::var("HOME") {
-                Ok(val) => Ok(val + "/.sloth"),
-                Err(_) => Err("Couldn't determine location of tasks file. Neither SLOTH_TASKS_DIR or HOME is set."),
+                Ok(val) => Ok(val + "/.sloth/tasks.txt"),
+                Err(_) => Err("Couldn't determine location of tasks file. Neither SLOTH_TASKS nor HOME is set."),
             },
         }
     }
@@ -137,8 +137,7 @@ fn slothsay(msg: &str)
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let filename = config.tasks_path + "/sloth_tasks.txt";
-    let contents = fs::read_to_string(filename)?;
+    let contents = fs::read_to_string(config.tasks_path)?;
     let tasks = parse_tasks(&contents);
     let task = pick_task(&tasks);
     slothsay(&task);
