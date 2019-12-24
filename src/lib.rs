@@ -25,11 +25,6 @@ impl Config {
     }
 }
 
-struct Dim {
-    rows: usize,
-    cols: usize,
-}
-
 fn parse_tasks(contents: &String) -> Vec<String> {
     // Tasks are delimited by a blank line
     let mut tasks = Vec::new();
@@ -110,9 +105,8 @@ fn rewrap(msg: &str, max_width: usize) -> String
     rewrapped
 }
 
-fn get_dims(msg: &str) -> Dim
+fn get_cols(msg: &str) -> usize
 {
-    let rows = msg.lines().count();
     let mut cols = 0;
     for line in msg.lines() {
         // I should probably be counting grapheme clusters
@@ -120,19 +114,19 @@ fn get_dims(msg: &str) -> Dim
             cols = line.chars().count();
         }
     }
-    Dim { rows, cols }
+    cols
 }
 
 fn slothsay(msg: &str)
 {
     let wrapped = rewrap(msg, 40);
-    let dim = get_dims(&wrapped);
+    let cols = get_cols(&wrapped);
     let mut fullmsg = String::from(SLOTH_ART);
-    fullmsg = fullmsg + " +-" + &"-".repeat(dim.cols) + "-+\n";
+    fullmsg = fullmsg + " +-" + &"-".repeat(cols) + "-+\n";
     for line in wrapped.lines() {
-        fullmsg = fullmsg + " | " + line + &" ".repeat(dim.cols - line.chars().count()) + " |\n";
+        fullmsg = fullmsg + " | " + line + &" ".repeat(cols - line.chars().count()) + " |\n";
     }
-    fullmsg = fullmsg + " +-" + &"-".repeat(dim.cols) + "-+";
+    fullmsg = fullmsg + " +-" + &"-".repeat(cols) + "-+";
     println!("{}", fullmsg);
 }
 
