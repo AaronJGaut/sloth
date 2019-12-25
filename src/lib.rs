@@ -1,6 +1,8 @@
 use std::env;
 use std::fs;
 use std::error::Error;
+use unicode_width::UnicodeWidthStr;
+use unicode_segmentation::UnicodeSegmentation;
 
 const SLOTH_ART: &'static str = include_str!("sloth.txt");
 
@@ -68,13 +70,15 @@ fn rewrap(msg: &str, max_width: usize) -> String
             None => continue,
         };
         loop {
-            if token.chars().count() > max_width && curr_line.is_empty() {
+            if token.width() > max_width && curr_line.is_empty() {
                 // Token is longer than max_width; need to cut it
                 let mut cut_index = 0;
-                for index in token.char_indices() {
-                    let index = index.0;
-                    if index >= max_width {
-                        cut_index = index;
+                for index in token.grapheme_indices(true) {
+                    let cut = token.split_at(index.0);
+                    if cut.0.width() < max_width {
+                        cut_index = index.0;
+                    }
+                    else {
                         break;
                     }
                 }
@@ -82,7 +86,7 @@ fn rewrap(msg: &str, max_width: usize) -> String
                 curr_line.push_str(cut.0);
                 token = cut.1;
             }
-            else if curr_line.chars().count() + token.chars().count() + 1 > max_width {
+            else if curr_line.width() + token.width() + 1 > max_width {
                 // Can't fit next token; need to wrap
                 curr_line = curr_line.trim().to_string();
                 rewrapped = rewrapped + &curr_line + "\n";
@@ -109,9 +113,9 @@ fn get_cols(msg: &str) -> usize
 {
     let mut cols = 0;
     for line in msg.lines() {
-        // I should probably be counting grapheme clusters
-        if line.chars().count() > cols {
-            cols = line.chars().count();
+        let width = line.width();
+        if width > cols {
+            cols = width;
         }
     }
     cols
@@ -124,7 +128,7 @@ fn slothsay(msg: &str)
     let mut fullmsg = String::from(SLOTH_ART);
     fullmsg = fullmsg + " +-" + &"-".repeat(cols) + "-+\n";
     for line in wrapped.lines() {
-        fullmsg = fullmsg + " | " + line + &" ".repeat(cols - line.chars().count()) + " |\n";
+        fullmsg = fullmsg + " | " + line + &" ".repeat(cols - line.width()) + " |\n";
     }
     fullmsg = fullmsg + " +-" + &"-".repeat(cols) + "-+";
     println!("{}", fullmsg);
