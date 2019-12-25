@@ -121,7 +121,7 @@ fn get_cols(msg: &str) -> usize
     cols
 }
 
-fn slothsay(msg: &str)
+pub fn slothsay(msg: &str)
 {
     let wrapped = rewrap(msg, 40);
     let cols = get_cols(&wrapped);
@@ -135,10 +135,16 @@ fn slothsay(msg: &str)
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let contents = fs::read_to_string(config.tasks_path)?;
-    let tasks = parse_tasks(&contents);
-    let task = pick_task(&tasks);
-    slothsay(&task);
-
+    match fs::read_to_string(&config.tasks_path) {
+        Ok(contents) => {
+            let tasks = parse_tasks(&contents);
+            let task = pick_task(&tasks);
+            slothsay(&task);
+        },
+        Err(_) => {
+            let msg = String::from("I think the tasks file should be at ") + &config.tasks_path + &", but I couldn't open that file.";
+            slothsay(&msg);
+        }
+    };
     Ok(())
 }
