@@ -28,4 +28,4 @@ $(DEBUG_BIN_PATH): src/*
 	cargo build
 
 $(PREFIX)/bin:
-	mkdir -p $@
+	mkdir -p "$@"
